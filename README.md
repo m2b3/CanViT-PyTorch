@@ -12,6 +12,12 @@ CanViT processes scenes through sequences of localized glimpses, integrating obs
 
 CanViT-B is pretrained on 1 billion ImageNet-21k glimpses via **passive-to-active dense distillation** from a frozen DINOv3 ViT-B teacher, without human annotations.
 
+## Quickstart
+
+```bash
+uv run demos/basic.py`
+```
+
 ## Pretrained checkpoints
 
 We release checkpoints on HuggingFace under the [`canvit`](https://huggingface.co/canvit) namespace.
