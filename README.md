@@ -15,7 +15,47 @@ CanViT-B is pretrained on 1 billion glimpses taken from 13.5 million ImageNet-21
 ## Quickstart
 
 ```bash
-uv run demos/basic.py
+uv add canvit-pytorch
+```
+
+```python
+from canvit_pytorch import CanViTForPretrainingHFHub, Viewpoint, sample_at_viewpoint
+from canvit_pytorch.preprocess import preprocess
+from PIL import Image
+import torch
+
+model = CanViTForPretrainingHFHub.from_pretrained(
+    "canvit/canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02"
+).eval()
+
+image = preprocess(512)(Image.open("test_data/Cat03.jpg").convert("RGB"))
+image = image.unsqueeze(0)  # [1, 3, 512, 512]
+
+state = model.init_state(batch_size=1, canvas_grid_size=32)
+vp = Viewpoint.full_scene(batch_size=1, device=image.device)
+glimpse = sample_at_viewpoint(spatial=image, viewpoint=vp, glimpse_size_px=128)
+
+with torch.inference_mode():
+    out = model(glimpse=glimpse, state=state, viewpoint=vp)
+
+canvas_spatial = model.get_spatial(out.state.canvas)  # [1, 1024, 1024]
+canvas_spatial = canvas_spatial.unflatten(1, (32, 32))  # [1, 32, 32, 1024] — spatial feature map
+out.state.recurrent_cls  # [1, 1, 768] — global CLS token
+out.local_patches        # [1, 64, 768] — glimpse patch features
+
+# Second glimpse: zoom into the top-left quadrant
+vp2 = Viewpoint(centers=torch.tensor([[-.5, -.5]]), scales=torch.tensor([.5]))
+glimpse2 = sample_at_viewpoint(spatial=image, viewpoint=vp2, glimpse_size_px=128)
+with torch.inference_mode():
+    out2 = model(glimpse=glimpse2, state=out.state, viewpoint=vp2)
+```
+
+For a full demo with classification and PCA visualization:
+
+```bash
+git clone https://github.com/m2b3/CanViT-PyTorch.git
+cd CanViT-PyTorch
+uv run --extra demo python demos/basic.py
 ```
 
 ## Pretrained checkpoints
