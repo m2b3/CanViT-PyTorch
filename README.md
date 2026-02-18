@@ -10,7 +10,7 @@ CanViT is a scalable recurrent architecture for fine-grained vision, and the fir
 
 CanViT processes scenes through sequences of localized glimpses, integrating observations over time into a persistent scene-wide latent workspace — the **canvas** — via **Canvas Attention**, an efficient asymmetric cross-attention mechanism based on Scene-Relative Rotary Position Embeddings.
 
-CanViT-B is pretrained on 1 billion ImageNet-21k glimpses in just 166 H100-hours via **passive-to-active dense distillation** from a frozen DINOv3 teacher, without human annotations.
+CanViT-B is pretrained on 1 billion ImageNet-21k glimpses via **passive-to-active dense distillation** from a frozen DINOv3 ViT-B teacher, without human annotations.
 
 ## Pretrained checkpoints
 
