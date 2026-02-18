@@ -14,6 +14,8 @@ CanViT processes scenes through sequences of localized glimpses, integrating obs
 
 CanViT-B is pretrained on 1 billion glimpses taken from 13.5 million ImageNet-21k scenes, via **policy-agnostic passive-to-active dense distillation** from a frozen DINOv3 ViT-B teacher, without human annotations.
 
+CanViT generalizes natively across policies, sequence length, glimpse size and canvas size, enabling high-resolution and long-horizon continual pretraining alongside task-specific policy learning.
+
 ## Quickstart
 
 ```bash
