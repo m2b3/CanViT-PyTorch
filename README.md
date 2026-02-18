@@ -18,6 +18,8 @@ CanViT generalizes natively across policies, sequence length, glimpse size and c
 
 ## Quickstart
 
+We recommend [`uv`](https://docs.astral.sh/uv/) for dependency management.
+
 ```bash
 uv add canvit-pytorch
 ```
