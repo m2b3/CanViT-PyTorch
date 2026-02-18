@@ -8,7 +8,7 @@ packages = ["canvit_pytorch"]
 [project]
 name = "canvit-pytorch"
 version = "0.1.0"
-description = "CanViT: Toward Active Vision Foundation Models (PyTorch Implementation)"
+description = "CanViT (Canvas Vision Transformer) -- PyTorch"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Yohaï-Eliel Berreby", email = "me@yberreby.com" }]

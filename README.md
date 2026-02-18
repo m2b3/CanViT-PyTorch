@@ -1,4 +1,4 @@
-# CanViT-PyTorch
+# CanViT (Canvas Vision Transformer) -- PyTorch Reference Implementation
 
 Reference PyTorch implementation of CanViT (Canvas Vision Transformer).
 
