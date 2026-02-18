@@ -31,7 +31,7 @@ An updated citation will be available upon preprint release.
   title={CanViT: Toward Active Vision Foundation Models},
   author={Berreby, Yoha{\"i}-Eliel and Du, Sabrina and Durand, Audrey and Krishna, Suresh},
   year={2026},
-  howpublished={\url{https://github.com/yberreby/CanViT-PyTorch}}
+  howpublished={\url{https://github.com/m2b3/CanViT-PyTorch}}
 }
 ```
 
