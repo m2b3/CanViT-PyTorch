@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["canvit_pytorch"]
+
+[project]
+name = "canvit-pytorch"
+version = "0.1.0"
+description = "CanViT: Toward Active Vision Foundation Models (PyTorch Implementation)"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Yohaï-Eliel Berreby", email = "me@yberreby.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "huggingface-hub>=1.3.2",
+    "numpy>=2.2.0,<2.4.0",
+    "torch>=2.9.1",
+    "scikit-learn>=1.7.0",
+    "ybml",
+    "timm",
+    "safetensors>=0.7.0",
+    "dinov3-in1k-probes",
+    "transformers>=5.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.36.1",
+    "comet-ml>=3.55.0",
+    "dacite>=1.9.2",
+    "ipython>=9.8.0",
+    "matplotlib>=3.10.8",
+    "onnx>=1.20.1",
+    "onnxruntime",
+    "onnxscript>=0.5.7",
+    "opencv-python>=4.13.0.90",
+    "pypatree>=0.4.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.10",
+    "rust-just>=1.46.0",
+    "streamlit>=1.53.1",
+    "streamlit-image-coordinates>=0.4.0",
+    "tqdm>=4.67.1",
+    "tyro>=1.0.3",
+]
+
+[tool.uv.sources]
+ybml = { git = "https://github.com/yberreby/ybml.git", rev = "b161368" }
+dinov3-in1k-probes = { git = "https://github.com/yberreby/dinov3-in1k-probes.git" }
+
+[tool.pytest.ini_options]
+testpaths = ["canvit_pytorch", "tests"]
+python_files = ["test.py", "test_*.py"]
+markers = ["slow: marks tests as slow (deselect with '-m not slow')"]
+addopts = "-m 'not slow'"
+
+[tool.ruff]
+exclude = ["throwaway"]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+# exclude = ["throwaway"]  # BUG: causes basedpyright to hang indefinitely

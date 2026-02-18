@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Artifacts
+*.svg
+*.png
+*.pdf
+*.pth
+*.pt
+*.bin
+*.onnx
+*.onnx.data
+.coverage
+outputs/
+bench/results/
+
+# Node.js
+node_modules
