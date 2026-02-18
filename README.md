@@ -61,7 +61,7 @@ with torch.inference_mode():
 # Let's inspect the structure of what we get back.
 # The canvas contains the model's working understanding of
 # the scene at any given time, and is linearly decodable 
-# into dense predictions.
+# into dense predictions upon token-wise LayerNorm.
 # See `demos/basic.py` for how to visualize the canvas.
 canvas_spatial = model.get_spatial(out.state.canvas)  # [1, 1024, 1024]
 canvas_spatial = canvas_spatial.unflatten(1, (32, 32))  # [1, 32, 32, 1024] — spatial feature map
