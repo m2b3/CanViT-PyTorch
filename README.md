@@ -15,7 +15,7 @@ CanViT-B is pretrained on 1 billion ImageNet-21k glimpses via **passive-to-activ
 ## Quickstart
 
 ```bash
-uv run demos/basic.py`
+uv run demos/basic.py
 ```
 
 ## Pretrained checkpoints
