@@ -1,5 +1,7 @@
 # CanViT (Canvas Vision Transformer) -- PyTorch
 
+**Yohaï-Eliel Berreby, Sabrina Du, Audrey Durand, Suresh Krishna**
+
 Reference PyTorch implementation of CanViT (Canvas Vision Transformer).
 
 _This is an early release. For details, a preprint version of our manuscript "CanViT: Toward Active Vision Foundation Models" will be available in the coming weeks._
