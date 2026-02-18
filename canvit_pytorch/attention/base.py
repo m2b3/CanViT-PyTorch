@@ -42,7 +42,7 @@ class CanvasAttention(nn.Module):
         self.out_dim: int = out_dim
         self.num_heads: int = num_heads
 
-        # Overriden by subclasses
+        # Overridden by subclasses
         self.q_proj: nn.Module = nn.Identity()
         self.k_proj: nn.Module = nn.Identity()
         self.v_proj: nn.Module = nn.Identity()

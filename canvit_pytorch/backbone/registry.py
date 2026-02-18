@@ -14,7 +14,7 @@ class BackboneConfig:
     embed_dim: int
     num_heads: int
     n_blocks: int
-    patch_size: int = 16
+    patch_size: int
     ffn_ratio: float = 4.0
     rope_base: float = 100.0
     layerscale_init: float = 1e-5
@@ -27,13 +27,13 @@ BackboneName = Literal[
 ]
 
 REGISTRY: dict[str, BackboneConfig] = {
-    "vits16": BackboneConfig(embed_dim=384, num_heads=6, n_blocks=12),
-    "vitb16": BackboneConfig(embed_dim=768, num_heads=12, n_blocks=12),
-    "vitl16": BackboneConfig(embed_dim=1024, num_heads=16, n_blocks=24),
+    "vits16": BackboneConfig(embed_dim=384, num_heads=6, n_blocks=12, patch_size=16),
+    "vitb16": BackboneConfig(embed_dim=768, num_heads=12, n_blocks=12, patch_size=16),
+    "vitl16": BackboneConfig(embed_dim=1024, num_heads=16, n_blocks=24, patch_size=16),
 }
 
 
-def create_backbone(name: str) -> ViTBackbone:
+def create_backbone(name: BackboneName) -> ViTBackbone:
     """Create a ViT backbone by name (random weights)."""
     if name not in REGISTRY:
         available = ", ".join(sorted(REGISTRY))

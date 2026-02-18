@@ -10,7 +10,7 @@ from canvit_pytorch.model import (
     CanViTOutput,
     RecurrentState,
 )
-from canvit_pytorch.norm import CLSStandardizer, PatchStandardizer, PositionAwareStandardizer
+from canvit_pytorch.standardizers import CLSStandardizer, PatchStandardizer, PositionAwareStandardizer
 from canvit_pytorch.viewpoint import Viewpoint, sample_at_viewpoint
 from canvit_pytorch.vpe import VPEEncoder
 

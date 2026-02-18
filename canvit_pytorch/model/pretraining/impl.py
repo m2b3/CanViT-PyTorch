@@ -12,7 +12,7 @@ from torch import Tensor, nn
 from canvit_pytorch.backbone import ViTBackbone, create_backbone
 from canvit_pytorch.model.base import CanViT
 from canvit_pytorch.model.base.config import CanViTConfig
-from canvit_pytorch.norm import CLSStandardizer, PatchStandardizer
+from canvit_pytorch.standardizers import CLSStandardizer, PatchStandardizer
 
 log = logging.getLogger(__name__)
 
