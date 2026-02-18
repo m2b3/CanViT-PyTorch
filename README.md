@@ -14,6 +14,8 @@ CanViT processes scenes through sequences of localized glimpses, integrating obs
 
 CanViT-B is pretrained on 1 billion glimpses taken from 13.5 million ImageNet-21k scenes, via **policy-agnostic passive-to-active dense distillation** from a frozen DINOv3 ViT-B teacher, without human annotations.
 
+CanViT's scene-wide output features at each timestep are linearly decodable into dense prwdictions without post-hoc upscaling; a frozen-weights CanViT-B evaluated with linear probing outperforms all prior dense active vision models by a wide margin on ADE20K scene parsing, at a fraction of the cost, while offering significantly greater flexibility.
+
 CanViT generalizes natively across policies, sequence length, glimpse size and canvas size, enabling high-resolution and long-horizon continual pretraining alongside task-specific policy learning.
 
 ## Quickstart
