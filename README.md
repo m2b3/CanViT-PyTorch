@@ -36,30 +36,48 @@ from canvit_pytorch.preprocess import preprocess
 from PIL import Image
 import torch
 
+# CanViT is integrated with the HuggingFace Hub.
 model = CanViTForPretrainingHFHub.from_pretrained(
     "canvit/canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02"
 ).eval()
 
-image = preprocess(512)(Image.open("test_data/Cat03.jpg").convert("RGB"))
+# Replace with the image of your choice
+image = Image.open("test_data/Cat03.jpg").convert("RGB")
+image = preprocess(512)(image)
 image = image.unsqueeze(0)  # [1, 3, 512, 512]
 
+# CanViT is a recurrent model.
 state = model.init_state(batch_size=1, canvas_grid_size=32)
-vp = Viewpoint.full_scene(batch_size=1, device=image.device)
-glimpse = sample_at_viewpoint(spatial=image, viewpoint=vp, glimpse_size_px=128)
 
+# Let's process a first glimpse: centered, zoomed-out.
+# You can use any viewpoint you like, as long as it is within bounds.
+# CanViT was trained on viewpoints covering 0.25% to 100%
+# of a scene's surface area.
 with torch.inference_mode():
+    vp = Viewpoint.full_scene(batch_size=1, device=image.device)
+    glimpse = sample_at_viewpoint(spatial=image, viewpoint=vp, glimpse_size_px=128)
     out = model(glimpse=glimpse, state=state, viewpoint=vp)
 
+# Let's inspect the structure of what we get back.
+# The canvas contains the model's working understanding of
+# the scene at any given time, and is linearly decodable 
+# into dense predictions.
+# See `demos/basic.py` for how to visualize the canvas.
 canvas_spatial = model.get_spatial(out.state.canvas)  # [1, 1024, 1024]
 canvas_spatial = canvas_spatial.unflatten(1, (32, 32))  # [1, 32, 32, 1024] — spatial feature map
 out.state.recurrent_cls  # [1, 1, 768] — global CLS token
 out.local_patches        # [1, 64, 768] — glimpse patch features
 
-# Second glimpse: zoom into the top-left quadrant
-vp2 = Viewpoint(centers=torch.tensor([[-.5, -.5]]), scales=torch.tensor([.5]))
-glimpse2 = sample_at_viewpoint(spatial=image, viewpoint=vp2, glimpse_size_px=128)
+# Now let's do a second glimpse: zoom into the top-left quadrant
+# You can do this repeatedly: CanViT is recurrent with a large but constant-size canvas.
 with torch.inference_mode():
+    vp2 = Viewpoint(centers=torch.tensor([[-.5, -.5]]), scales=torch.tensor([.5]))
+    glimpse2 = sample_at_viewpoint(spatial=image, viewpoint=vp2, glimpse_size_px=128)
     out2 = model(glimpse=glimpse2, state=out.state, viewpoint=vp2)
+    
+# You can use CanViT with frozen weights, fine-tune it, learn a policy on top...
+# Or pretrain your own; it's fast.
+# Start building!
 ```
 
 For a full demo with classification and PCA visualization:
