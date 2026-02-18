@@ -16,7 +16,7 @@ class CanViTForPretrainingHFHub(
     CanViTForPretraining,
     PyTorchModelHubMixin,
     library_name="canvit-pytorch",
-    repo_url="https://github.com/yberreby/CanViT-PyTorch",
+    repo_url="https://github.com/m2b3/CanViT-PyTorch",
 ):
     """CanViTForPretraining with HuggingFace Hub integration.
 
