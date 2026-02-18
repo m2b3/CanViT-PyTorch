@@ -1,7 +1,9 @@
 """ImageNet preprocessing utilities."""
 
-from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from torch import Tensor
+
+IMAGENET_DEFAULT_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_DEFAULT_STD = (0.229, 0.224, 0.225)
 from torchvision import transforms
 
 
