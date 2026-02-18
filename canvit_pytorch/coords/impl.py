@@ -1,6 +1,6 @@
 import torch
 from torch import Tensor
-from ytch import assert_shape
+from canvit_pytorch.correctness import assert_shape
 
 
 def grid_coords(

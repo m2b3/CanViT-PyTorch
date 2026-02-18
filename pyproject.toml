@@ -18,7 +18,6 @@ dependencies = [
     "numpy>=2.2.0,<2.4.0",
     "torch>=2.9.1",
     "scikit-learn>=1.7.0",
-    "ybml",
     "timm",
     "safetensors>=0.7.0",
     "dinov3-in1k-probes",
@@ -48,7 +47,6 @@ dev = [
 ]
 
 [tool.uv.sources]
-ybml = { git = "https://github.com/yberreby/ybml.git", rev = "b161368" }
 dinov3-in1k-probes = { git = "https://github.com/yberreby/dinov3-in1k-probes.git" }
 
 [tool.pytest.ini_options]
