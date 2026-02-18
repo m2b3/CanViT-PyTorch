@@ -22,6 +22,8 @@ CanViT's scene-wide output features at each timestep are linearly decodable into
 
 CanViT generalizes natively across policies, sequence length, glimpse size and canvas size, enabling high-resolution and long-horizon continual pretraining alongside task-specific policy learning.
 
+CanViT enables low-latency high-resolution dense vision, running at hundreds of sequential frames per second on commodity hardware.
+
 ## Quickstart
 
 We recommend [`uv`](https://docs.astral.sh/uv/) for dependency management.
