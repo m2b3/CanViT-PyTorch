@@ -48,6 +48,14 @@ def fuse_probe(
     assert mu.shape == (teacher_dim,) and sigma.shape == (teacher_dim,)
     assert W_probe.shape == (n_classes, teacher_dim) and b_probe.shape == (n_classes,)
 
+    out_dtype = W_proj.dtype
+    W_proj = W_proj.double()
+    b_proj = b_proj.double()
+    mu = mu.double()
+    sigma = sigma.double()
+    W_probe = W_probe.double()
+    b_probe = b_probe.double()
+
     B_mat = sigma.unsqueeze(1) * W_proj
     assert B_mat.shape == (teacher_dim, D)
     b_mid = sigma * b_proj + mu
@@ -56,7 +64,7 @@ def fuse_probe(
     assert W_fused.shape == (n_classes, D)
     b_fused = W_probe @ b_mid + b_probe
     assert b_fused.shape == (n_classes,)
-    return W_fused, b_fused
+    return W_fused.to(out_dtype), b_fused.to(out_dtype)
 
 
 class CanViTForImageClassification(
