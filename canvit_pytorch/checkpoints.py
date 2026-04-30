@@ -4,9 +4,9 @@ Single source of truth for the CanViT checkpoint root. Every CanViT-owned
 repo-id flows through :func:`resolve_canvit_repo`; third-party repos
 (``facebook/...``, etc.) stay as bare string literals.
 
-The default ``"canvit"`` resolves to canonical Hub IDs (e.g.
-``canvit/canvitb16-...``). Override via ``$CANVIT_REPO_ROOT`` to redirect
-every load — the value can be either an HF org prefix or a local path:
+The default ``"canvit"`` resolves to Hub IDs prefixed with ``canvit/``
+(e.g. ``canvit/canvitb16-...``). Override via ``$CANVIT_REPO_ROOT`` to
+redirect every load — the value can be either an HF org prefix or a local path:
 
     # Local checkpoint bundle: ship checkpoints in a directory tree.
     export CANVIT_REPO_ROOT="$(pwd)/canvit_checkpoints"
