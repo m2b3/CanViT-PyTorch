@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from typing import cast, get_args
 
+import torch
 from huggingface_hub import PyTorchModelHubMixin, hf_hub_download
 from safetensors.torch import load_file
 from torch import Tensor, nn
@@ -130,11 +131,15 @@ class CanViTForImageClassification(
         """Returns (logits [B, n_classes], new_state).
 
         For CanViT-only execution without the classification head, call ``self.canvit(...)`` directly.
-        For head-only on a cached CLS token, call ``self.head(self.norm(cls))``.
+        For head-only on a cached CLS token, wrap in ``torch.autocast(enabled=False)``
+        and call ``self.head(self.norm(cls.float()))`` — bare ``.float()`` is undone
+        by ``nn.Linear``/``nn.LayerNorm`` autocast policies.
         """
         out = self.canvit(glimpse=glimpse, state=state, viewpoint=viewpoint)
-        cls = out.state.recurrent_cls[:, 0].float()
-        return self.head(self.norm(cls)), out.state
+        cls = out.state.recurrent_cls[:, 0]
+        with torch.autocast(device_type=cls.device.type, enabled=False):
+            logits = self.head(self.norm(cls.float()))
+        return logits, out.state
 
     @classmethod
     def from_pretrained_with_probe(

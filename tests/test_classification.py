@@ -57,6 +57,20 @@ class TestFromPretrainedWithProbe:
             logits_split = clf.head(clf.norm(out.state.recurrent_cls[:, 0].float()))
         assert (logits_combined - logits_split).abs().max() < 1e-6
 
+    def test_forward_keeps_head_in_fp32_under_autocast(self, clf, dummy_input):
+        """forward() must return fp32 logits even when outer autocast is bf16.
+
+        The naive ``self.head(self.norm(cls.float()))`` is undone by Linear/LayerNorm
+        autocast policies that re-cast inputs to bf16. The fix is an explicit nested
+        ``torch.autocast(enabled=False)``. Regression here is silent (~0.4% flip rate),
+        so this assertion is the only signal.
+        """
+        glimpse, vp = dummy_input
+        state = clf.init_state(batch_size=B, canvas_grid_size=CANVAS_GRID)
+        with torch.inference_mode(), torch.autocast(device_type="cpu", dtype=torch.bfloat16):
+            logits, _ = clf(glimpse=glimpse, state=state, viewpoint=vp)
+        assert logits.dtype == torch.float32, f"expected fp32, got {logits.dtype}"
+
     def test_fusion_matches_unfused(self, clf, dummy_input):
         """Fused LN → Linear must match the original 4-stage unfused pipeline."""
         from huggingface_hub import hf_hub_download
