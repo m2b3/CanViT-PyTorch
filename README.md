@@ -222,4 +222,4 @@ Open an issue in this repository or email me@yberreby.com.
 
 ## License
 
-MIT. See [LICENSE.md](LICENSE.md) for details.
+MIT. See [LICENSE](LICENSE) for details.
