@@ -1,4 +1,4 @@
-"""Viewpoint Positional Encoding (VPE) via Random Fourier Features.
+"""Viewpoint Encoding (VPE) via Random Fourier Features.
 
 COORDINATE CONVENTIONS (matches canvit.coords, canvit.viewpoint):
 - y, x: spatiotopic scene coordinates in [-1, 1]
@@ -24,7 +24,7 @@ from torch import Tensor, nn
 
 
 class VPEEncoder(nn.Module):
-    """Viewpoint Positional Encoding using Random Fourier Features.
+    """Viewpoint Encoding using Random Fourier Features.
 
     Encodes (y, x, s) viewpoint into a high-dimensional vector.
     Uses (y, x) order to match canvit.coords and canvit.viewpoint conventions.
