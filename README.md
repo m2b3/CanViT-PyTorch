@@ -150,10 +150,10 @@ print(logits.argmax(dim=-1))  # ImageNet-1k class index
 ```python
 from canvit_pytorch import CanViTForSemanticSegmentation
 
-# Frozen CanViT + the flagship ADE20K probe (45.9% mIoU, 1024px / 64x64 canvas):
+# Frozen CanViT + the flagship ADE20K probe (45.9% mIoU, 512px / 64x64 canvas):
 seg = CanViTForSemanticSegmentation.from_pretrained_with_probe(
     pretrained_repo="canvit/canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02",
-    probe_repo="canvit/probe-ade20k-40k-s1024-c64-in21k",
+    probe_repo="canvit/probe-ade20k-40k-s512-c64-in21k",
 ).eval()
 
 state = seg.init_state(batch_size=1, canvas_grid_size=64)
