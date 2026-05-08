@@ -189,6 +189,8 @@ We aim to maintain compatibility with [`torch.export`](https://docs.pytorch.org/
 ## See also
 
 - [CanViT-pretrain](https://github.com/m2b3/CanViT-pretrain) — pretraining harness (passive-to-active dense distillation from DINOv3)
+- [CanViT-specialize](https://github.com/m2b3/CanViT-specialize) — downstream training: ADE20K segmentation probes and IN1k classification finetuning
+- [CanViT-eval](https://github.com/m2b3/CanViT-eval) — evaluation and benchmarking (ADE20K mIoU, IN1k top-k, DINOv3 reconstruction)
 - [CanViT-MLX](https://github.com/yberreby/CanViT-MLX) — MLX implementation for Apple Silicon (experimental)
 - [CanViT-NNX](https://github.com/yberreby/CanViT-NNX) — JAX/Flax NNX implementation (experimental)
 
