@@ -24,9 +24,18 @@ def resolve_canvit_repo(name: str) -> str:
     return f"{CANVIT_REPO_ROOT}/{name}"
 
 
+def ade20k_probe_name(model_short: str, *, scene: int, grid: int, steps_k: int = 40) -> str:
+    """Repo name for a canvas-feature ADE20K segmentation probe."""
+    return f"probe-ade20k-{steps_k}k-s{scene}-c{grid}-{model_short}"
+
+
+def ade20k_dinov3_probe_name(model_short: str, *, resolution: int, steps_k: int = 40) -> str:
+    """Repo name for a DINOv3-feature ADE20K segmentation probe."""
+    return f"probe-ade20k-{steps_k}k-{model_short}-{resolution}px"
+
+
 def ade20k_probe_repo(model_short: str, *, scene: int, grid: int, steps_k: int = 40) -> str:
-    """Repo-id for a canvas-feature ADE20K segmentation probe."""
-    return resolve_canvit_repo(f"probe-ade20k-{steps_k}k-s{scene}-c{grid}-{model_short}")
+    return resolve_canvit_repo(ade20k_probe_name(model_short, scene=scene, grid=grid, steps_k=steps_k))
 
 
 # Pretraining-ablation checkpoints (slug -> repo-id). Slugs are shared with
