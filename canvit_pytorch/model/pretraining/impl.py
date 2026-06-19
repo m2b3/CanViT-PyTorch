@@ -1,7 +1,6 @@
 """CanViT for pretraining implementation."""
 
 import logging
-import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Self
@@ -12,6 +11,7 @@ from torch import Tensor, nn
 from canvit_pytorch.backbone import ViTBackbone, create_backbone
 from canvit_pytorch.model.base import CanViT
 from canvit_pytorch.model.base.config import CanViTConfig
+from canvit_pytorch.model.pretrain_common import init_decoder_ln_weight
 from canvit_pytorch.standardizers import CLSStandardizer, PatchStandardizer
 
 log = logging.getLogger(__name__)
@@ -22,10 +22,6 @@ class CanViTForPretrainingConfig(CanViTConfig):
     """Model configuration for CanViTForPretraining."""
 
     teacher_dim: int
-
-
-def _init_ln_weight(ln: nn.LayerNorm, dim: int) -> None:
-    ln.weight.data.fill_(1.0 / math.sqrt(dim))
 
 
 class CanViTForPretraining(CanViT):
@@ -61,8 +57,8 @@ class CanViTForPretraining(CanViT):
         patches_norm = self.scene_patches_head["norm"]
         cls_norm = self.scene_cls_head["norm"]
         assert isinstance(patches_norm, nn.LayerNorm) and isinstance(cls_norm, nn.LayerNorm)
-        _init_ln_weight(patches_norm, canvas_dim)
-        _init_ln_weight(cls_norm, local_dim)
+        init_decoder_ln_weight(patches_norm, canvas_dim)
+        init_decoder_ln_weight(cls_norm, local_dim)
 
         # Standardizers keyed by canvas grid size (spatial tokens only, excludes registers)
         self.cls_standardizers: nn.ModuleDict = nn.ModuleDict()
