@@ -5,6 +5,7 @@ from canvit_pytorch.checkpoints import (
     PRETRAIN_CHECKPOINTS,
     PRETRAIN_MODEL_SHORTS,
 )
+from canvit_pytorch.model.pretraining.hub import descriptive_metadata
 from canvit_pytorch.model.pretraining.hub.model_card import pretrain_model_card
 
 
@@ -27,6 +28,20 @@ def test_model_card_fills_data_specific_fields():
     assert "ImageNet-1k" in card
     assert "2,001,792" in card
     assert "berreby2026canvit" in card
+
+
+def test_descriptive_metadata_excludes_deanonymizing_fields():
+    raw = {
+        "dataset": "in1k", "step": 100, "git_commit": "abc", "train_loss": 0.9,
+        "hostname": "g13.nibi.sharcnet", "cmdline": ["/scratch/yberreby/x"],
+        "slurm_job_id": "1", "comet_id": "x", "provenance_history": {},
+        "training_config_history": {},
+    }
+    meta = descriptive_metadata(raw)
+    for leak in ("hostname", "cmdline", "slurm_job_id", "comet_id",
+                 "provenance_history", "training_config_history"):
+        assert leak not in meta
+    assert meta["dataset"] == "in1k" and meta["step"] == 100 and meta["git_commit"] == "abc"
 
 
 def test_model_card_omits_step_clause_when_unknown():

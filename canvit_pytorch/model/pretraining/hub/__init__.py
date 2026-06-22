@@ -115,8 +115,19 @@ def push_to_hf_hub(
     return upload_to_hf(model, repo_id, private=private)
 
 
-# Checkpoint keys too large / non-serializable for HF config.json metadata.
-_SKIP_METADATA = {"state_dict", "optimizer_state", "scheduler_state"}
+# Model-descriptive checkpoint fields published in the Hub config.json. Whitelist,
+# not blacklist: training provenance that can carry usernames / host / paths
+# (hostname, cmdline, slurm_*, comet_id, *_history) is never published, so a
+# public repo can't deanonymize.
+_PUBLIC_METADATA_FIELDS = (
+    "dataset", "teacher_name", "teacher_repo_id", "teacher_dim",
+    "glimpse_grid_size", "scene_resolution", "step", "train_loss",
+    "timestamp", "git_commit", "git_dirty",
+)
+
+
+def descriptive_metadata(raw: dict) -> dict:
+    return {k: raw[k] for k in _PUBLIC_METADATA_FIELDS if k in raw}
 
 
 def _migrate_standardizers_in_place(raw: dict) -> None:
@@ -177,7 +188,7 @@ def push_checkpoint_file(
 
     raw = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     model = reconstruct_pretrain_model(raw)
-    meta = {k: v for k, v in raw.items() if k not in _SKIP_METADATA}
+    meta = descriptive_metadata(raw)
 
     card = None
     if with_card:
