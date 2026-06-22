@@ -1,10 +1,16 @@
 """Safe HF Hub loading mixin — checks for key mismatches that PyTorchModelHubMixin silently ignores."""
 
 import logging
+from typing import TypeVar
 
+from huggingface_hub import ModelHubMixin
 from torch import nn
 
 log = logging.getLogger(__name__)
+
+# Matches PyTorchModelHubMixin._load_as_safetensor's TypeVar so the override is
+# type-compatible; every concrete subclass is also an nn.Module (asserted below).
+T = TypeVar("T", bound=ModelHubMixin)
 
 
 class SafeHubMixin:
@@ -19,8 +25,9 @@ class SafeHubMixin:
     """
 
     @classmethod
-    def _load_as_safetensor(cls, model: nn.Module, model_file: str, map_location: str, strict: bool) -> nn.Module:
+    def _load_as_safetensor(cls, model: T, model_file: str, map_location: str, strict: bool) -> T:
         import safetensors.torch
+        assert isinstance(model, nn.Module)
         missing, unexpected = safetensors.torch.load_model(model, model_file, strict=False, device=map_location)
         if missing or unexpected:
             msg = (

@@ -63,3 +63,23 @@ ABLATION_CHECKPOINTS: dict[str, str] = {
 ABLATION_MODEL_SHORTS: dict[str, str] = {
     repo: f"abl-{slug}" for slug, repo in ABLATION_CHECKPOINTS.items()
 }
+
+
+# Main (non-ablation) pretraining checkpoints (slug -> repo-id). The slug
+# doubles as the probe-name model-short (e.g. probe-ade20k-...-in21k), mirroring
+# ABLATION_CHECKPOINTS/ABLATION_MODEL_SHORTS.
+PRETRAIN_CHECKPOINTS: dict[str, str] = {
+    slug: resolve_canvit_repo(name)
+    for slug, name in {
+        "in21k": "canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02",
+        "in1k":  "canvitb16-add-vpe-pretrain-g128px-s512px-in1k-dv3b16-2026-06-22",
+        "sa1b":  "canvitb16-add-vpe-pretrain-g128px-s1024px-sa1b-dv3b16-2026-02-26-from-in21k-2026-02-02",
+    }.items()
+}
+
+PRETRAIN_MODEL_SHORTS: dict[str, str] = {
+    repo: slug for slug, repo in PRETRAIN_CHECKPOINTS.items()
+}
+
+# IN21k passive-to-active distillation: default model for evals, probes, demos.
+FLAGSHIP_PRETRAIN_REPO: str = PRETRAIN_CHECKPOINTS["in21k"]
