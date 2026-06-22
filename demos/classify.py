@@ -23,12 +23,13 @@ import torch
 from PIL import Image
 
 from canvit_pytorch import CanViTForImageClassification, Viewpoint, resolve_canvit_repo, sample_at_viewpoint
+from canvit_pytorch.checkpoints import FLAGSHIP_PRETRAIN_REPO
 from canvit_pytorch.preprocess import preprocess
 
 log = logging.getLogger("classify")
 
 FINETUNED_REPO = resolve_canvit_repo("canvitb16-add-vpe-finetune-g128px-s512px-in1k-2026-04-06")
-PRETRAINED_REPO = resolve_canvit_repo("canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02")
+PRETRAINED_REPO = FLAGSHIP_PRETRAIN_REPO
 PROBE_REPO = resolve_canvit_repo("dinov3-vitb16-lvd1689m-in1k-512x512-linear-clf-probe")
 
 CANVAS_GRID = 32

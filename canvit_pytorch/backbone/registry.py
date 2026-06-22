@@ -33,8 +33,9 @@ REGISTRY: dict[str, BackboneConfig] = {
 }
 
 
-def create_backbone(name: BackboneName) -> ViTBackbone:
-    """Create a ViT backbone by name (random weights)."""
+def create_backbone(name: str) -> ViTBackbone:
+    """Create a ViT backbone by name (random weights). Validates against the
+    registry; `name` is `str` because it commonly arrives from checkpoint metadata."""
     if name not in REGISTRY:
         available = ", ".join(sorted(REGISTRY))
         raise ValueError(f"Unknown backbone: {name!r}. Available: {available}")

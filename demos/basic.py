@@ -22,13 +22,14 @@ import torch.nn.functional as F
 from PIL import Image
 from sklearn.decomposition import PCA
 
-from canvit_pytorch import CanViTForPretrainingHFHub, RecurrentState, Viewpoint, resolve_canvit_repo, sample_at_viewpoint
+from canvit_pytorch import CanViTForPretrainingHFHub, RecurrentState, Viewpoint, sample_at_viewpoint
+from canvit_pytorch.checkpoints import FLAGSHIP_PRETRAIN_REPO
 from canvit_pytorch.preprocess import imagenet_denormalize, preprocess
 
 
 @dataclass
 class Config:
-    model_repo: str = resolve_canvit_repo("canvitb16-add-vpe-pretrain-g128px-s512px-in21k-dv3b16-2026-02-02")
+    model_repo: str = FLAGSHIP_PRETRAIN_REPO
     image: Path = Path("test_data/Places365_IMG_9600.jpeg")
     canvas_grid: int = 32
     glimpse_px: int = 128
