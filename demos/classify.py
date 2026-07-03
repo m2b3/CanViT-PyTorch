@@ -18,8 +18,8 @@ import logging
 from pathlib import Path
 from typing import Literal
 
-import timm
 import torch
+from timm.data.imagenet_info import ImageNetInfo
 from PIL import Image
 
 from canvit_pytorch import CanViTForImageClassification, Viewpoint, resolve_canvit_repo, sample_at_viewpoint
@@ -54,7 +54,7 @@ def load_classifier(mode: Literal["finetuned", "frozen"]) -> CanViTForImageClass
 
 def classify(clf: CanViTForImageClassification, image: torch.Tensor) -> None:
     """Run C2F glimpses and print per-step top-1 prediction."""
-    ini = timm.data.ImageNetInfo()
+    ini = ImageNetInfo()
     state = clf.init_state(batch_size=1, canvas_grid_size=CANVAS_GRID)
 
     with torch.inference_mode():
@@ -68,7 +68,7 @@ def classify(clf: CanViTForImageClassification, image: torch.Tensor) -> None:
 
             probs = torch.softmax(logits, dim=-1)
             top = probs[0].topk(1)
-            label = ini.index_to_description(top.indices[0].item()).split(",")[0]
+            label = ini.index_to_description(int(top.indices[0].item())).split(",")[0]
             conf = top.values[0].item()
 
             region = "full scene" if s == 1.0 else f"({cy:+.1f}, {cx:+.1f}) scale={s}"
