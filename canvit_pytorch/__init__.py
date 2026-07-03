@@ -9,10 +9,16 @@ from canvit_pytorch.model import (
     CanViTForPretraining,
     CanViTForPretrainingConfig,
     CanViTForPretrainingHFHub,
+    CanViTForRGBReconstruction,
+    CanViTForRGBReconstructionHFHub,
     CanViTForSemanticSegmentation,
     CanViTOutput,
     RecurrentState,
     fuse_probe,
+    load_canvit_base,
+    make_rgb_repo_id,
+    patchify,
+    unpatchify,
 )
 from canvit_pytorch.probes import SegmentationProbe
 from canvit_pytorch.standardizers import CLSStandardizer, PatchStandardizer, PositionAwareStandardizer
@@ -28,6 +34,8 @@ __all__ = [
     "CanViTForPretraining",
     "CanViTForPretrainingConfig",
     "CanViTForPretrainingHFHub",
+    "CanViTForRGBReconstruction",
+    "CanViTForRGBReconstructionHFHub",
     "CanViTForSemanticSegmentation",
     "CANVIT_REPO_ROOT",
     "CanViTOutput",
@@ -40,6 +48,10 @@ __all__ = [
     "ViTBackbone",
     "create_backbone",
     "fuse_probe",
+    "load_canvit_base",
+    "make_rgb_repo_id",
+    "patchify",
+    "unpatchify",
     "resolve_canvit_repo",
     "sample_at_viewpoint",
 ]

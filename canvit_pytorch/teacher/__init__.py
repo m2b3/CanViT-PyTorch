@@ -53,8 +53,8 @@ def load_teacher(
         repo_id: HuggingFace model ID, e.g. "facebook/dinov3-vitb16-pretrain-lvd1689m"
         device: Target device
     """
-    log.info(f"Loading teacher: {repo_id}")
-    log.info(f"  device: {device}")
+    log.info("Loading teacher: %s", repo_id)
+    log.info("  device: %s", device)
 
     hf_model = AutoModel.from_pretrained(repo_id, dtype=torch.float32)
     assert isinstance(hf_model, PreTrainedModel)
@@ -64,5 +64,5 @@ def load_teacher(
     hf_model.to(device)  # pyright: ignore[reportArgumentType]
 
     teacher = DINOv3Teacher(hf_model)
-    log.info(f"  embed_dim: {teacher.embed_dim}, n_blocks: {teacher.n_blocks}")
+    log.info("  embed_dim: %d, n_blocks: %d", teacher.embed_dim, teacher.n_blocks)
     return teacher

@@ -136,7 +136,7 @@ class CanViT(nn.Module):
         self.read_after_blocks = read_after
         self.write_after_blocks = write_after
 
-        log.info(f"CanViT: {n_blocks} blocks, rw_stride={cfg.rw_stride}, read_after={read_after}, write_after={write_after}")
+        log.info("CanViT: %d blocks, rw_stride=%d, read_after=%s, write_after=%s", n_blocks, cfg.rw_stride, read_after, write_after)
 
         ReadCls = CanvasReadAttentionFull if cfg.canvas_proj_mode == "full" else CanvasReadAttention
         WriteCls = CanvasWriteAttentionFull if cfg.canvas_proj_mode == "full" else CanvasWriteAttention
@@ -153,21 +153,22 @@ class CanViT(nn.Module):
             for _ in range(len(write_after))
         ])
 
-        log.info(f"Canvas attention: {len(read_after)} reads, {len(write_after)} writes, "
-                 f"mode={cfg.canvas_update_mode}, vpe={cfg.enable_vpe}"
-                 + (f", gate_bias_init={cfg.gate_bias_init}" if cfg.gate_bias_init is not None else ""))
+        log.info(
+            "Canvas attention: %d reads, %d writes, mode=%s, vpe=%s, gate_bias_init=%s",
+            len(read_after), len(write_after), cfg.canvas_update_mode, cfg.enable_vpe, cfg.gate_bias_init,
+        )
 
         canvas_scale = 1.0 / math.sqrt(canvas_dim)
         self.canvas_register_init = nn.Parameter(torch.randn(1, cfg.n_canvas_registers, canvas_dim) * canvas_scale)
         self.canvas_spatial_init = nn.Parameter(torch.randn(1, 1, canvas_dim) * canvas_scale)
-        log.info(f"Canvas registers: {cfg.n_canvas_registers}")
+        log.info("Canvas registers: %d", cfg.n_canvas_registers)
 
         local_scale = 1.0 / math.sqrt(local_dim)
         self.recurrent_cls_init = nn.Parameter(torch.randn(1, 1, local_dim) * local_scale)
         self.backbone_registers = nn.Parameter(torch.empty(1, cfg.n_backbone_registers, local_dim))
         nn.init.normal_(self.backbone_registers, std=0.02)
 
-        log.info(f"Backbone registers: {cfg.n_backbone_registers}")
+        log.info("Backbone registers: %d", cfg.n_backbone_registers)
 
         self.vpe: VPEEncoder | None = None
         if cfg.enable_vpe:
@@ -205,7 +206,7 @@ class CanViT(nn.Module):
     def _get_spatial_positions(self, canvas: Tensor, canvas_grid_size: int | None = None) -> Tensor:
         if canvas_grid_size is None:
             n_spatial = canvas.shape[1] - self.n_canvas_registers
-            canvas_grid_size = int(math.sqrt(n_spatial))
+            canvas_grid_size = math.isqrt(n_spatial)
             assert canvas_grid_size * canvas_grid_size == n_spatial
         return grid_coords(H=canvas_grid_size, W=canvas_grid_size, device=canvas.device).flatten(0, 1)
 

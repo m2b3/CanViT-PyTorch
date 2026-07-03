@@ -1,7 +1,6 @@
 """CanViT for pretraining implementation."""
 
 import logging
-import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Self
@@ -12,6 +11,7 @@ from torch import Tensor, nn
 from canvit_pytorch.backbone import ViTBackbone, create_backbone
 from canvit_pytorch.model.base import CanViT
 from canvit_pytorch.model.base.config import CanViTConfig
+from canvit_pytorch.model.pretrain_common import init_decoder_ln_weight
 from canvit_pytorch.standardizers import CLSStandardizer, PatchStandardizer
 
 log = logging.getLogger(__name__)
@@ -22,10 +22,6 @@ class CanViTForPretrainingConfig(CanViTConfig):
     """Model configuration for CanViTForPretraining."""
 
     teacher_dim: int
-
-
-def _init_ln_weight(ln: nn.LayerNorm, dim: int) -> None:
-    ln.weight.data.fill_(1.0 / math.sqrt(dim))
 
 
 class CanViTForPretraining(CanViT):
@@ -61,8 +57,8 @@ class CanViTForPretraining(CanViT):
         patches_norm = self.scene_patches_head["norm"]
         cls_norm = self.scene_cls_head["norm"]
         assert isinstance(patches_norm, nn.LayerNorm) and isinstance(cls_norm, nn.LayerNorm)
-        _init_ln_weight(patches_norm, canvas_dim)
-        _init_ln_weight(cls_norm, local_dim)
+        init_decoder_ln_weight(patches_norm, canvas_dim)
+        init_decoder_ln_weight(cls_norm, local_dim)
 
         # Standardizers keyed by canvas grid size (spatial tokens only, excludes registers)
         self.cls_standardizers: nn.ModuleDict = nn.ModuleDict()
@@ -70,28 +66,38 @@ class CanViTForPretraining(CanViT):
 
         self.backbone_name = backbone_name
         for g in canvas_patch_grid_sizes:
-            self.standardizers(g)  # get-or-create, ensures they exist in state_dict
+            self.standardizers(g, create_missing=True)  # ensures they exist in state_dict
 
     @property
     def canvas_patch_grid_sizes(self) -> list[int]:
         """Canvas grid sizes (spatial side lengths in tokens) for which standardizers exist."""
         return [int(k) for k in self.cls_standardizers.keys()]
 
-    def standardizers(self, grid_size: int) -> tuple[CLSStandardizer, PatchStandardizer]:
-        """Get standardizers for a grid size, creating if needed."""
+    def standardizers(self, grid_size: int, *, create_missing: bool = False) -> tuple[CLSStandardizer, PatchStandardizer]:
+        """Get standardizers for a grid size.
+
+        ``create_missing=True`` registers fresh ones for a new grid; only training
+        setup that will initialize their statistics should pass it.
+        """
         key = str(grid_size)
         if key not in self.cls_standardizers:
+            # Freshly created standardizers hold identity statistics; consuming one
+            # without initializing it would silently destandardize with the wrong moments.
+            assert create_missing, (
+                f"No standardizer for canvas grid size {grid_size} "
+                f"(available: {self.canvas_patch_grid_sizes})"
+            )
             cfg = self.cfg
             assert isinstance(cfg, CanViTForPretrainingConfig)
             self.cls_standardizers[key] = CLSStandardizer(embed_dim=cfg.teacher_dim)
             self.scene_standardizers[key] = PatchStandardizer(grid_size=grid_size, embed_dim=cfg.teacher_dim)
-        return self.cls_standardizers[key], self.scene_standardizers[key]  # type: ignore[return-value]
+        return self.cls_standardizers[key], self.scene_standardizers[key]  # type: ignore[return-value]  # ModuleDict.__getitem__ returns Module
 
     @classmethod
     def from_checkpoint(cls, path: Path | str, *, map_location: str | torch.device = "cpu") -> Self:
         """Load from local .pt checkpoint file."""
         log.info("Loading checkpoint from %s (map_location=%s)", path, map_location)
-        ckpt = torch.load(path, map_location=map_location, weights_only=False)
+        ckpt = torch.load(path, map_location=map_location, weights_only=True)
         log.info("backbone_name=%s, canvas_patch_grid_sizes=%s", ckpt["backbone_name"], ckpt["canvas_patch_grid_sizes"])
         model = cls(
             backbone=create_backbone(ckpt["backbone_name"]),
