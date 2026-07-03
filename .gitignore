@@ -9,6 +9,14 @@ wheels/
 # Virtual environments
 .venv
 
+# macOS
+.DS_Store
+
+# Local scratch
+throwaway/
+*.bak
+.env
+
 # Artifacts
 *.svg
 *.png
