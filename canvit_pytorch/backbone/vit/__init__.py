@@ -61,6 +61,9 @@ class SelfAttention(nn.Module):
         self.head_dim = dim // num_heads
         self.scale = self.head_dim ** -0.5
         self.qkv = nn.Linear(dim, dim * 3)
+        # DINOv3 disables the key bias (qkv_bias applies to q and v only); zero
+        # the k slice of the fused bias at forward time so weights stay
+        # checkpoint-compatible with a plain fused Linear.
         mask = torch.ones(dim * 3)
         mask[dim : 2 * dim] = 0
         self.register_buffer("_bias_mask", mask, persistent=False)
