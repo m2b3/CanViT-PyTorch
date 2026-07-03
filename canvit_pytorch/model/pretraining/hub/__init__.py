@@ -167,7 +167,7 @@ def push_checkpoint_file(
 
     from .model_card import pretrain_model_card
 
-    raw = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    raw = torch.load(ckpt_path, map_location="cpu", weights_only=True)
     model = reconstruct_pretrain_model(raw)
     meta = descriptive_metadata(raw)
 
