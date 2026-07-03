@@ -1,0 +1,4 @@
+# Ignore all by default
+*
+!.gitignore
+!Cat03.jpg
