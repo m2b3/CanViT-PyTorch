@@ -74,20 +74,26 @@ class CanViTForPretraining(CanViT):
         return [int(k) for k in self.cls_standardizers.keys()]
 
     def standardizers(self, grid_size: int) -> tuple[CLSStandardizer, PatchStandardizer]:
-        """Get standardizers for a grid size, creating if needed."""
+        """Get standardizers for a grid size, creating them when called in training mode."""
         key = str(grid_size)
         if key not in self.cls_standardizers:
+            # Freshly created standardizers hold identity statistics; using one at
+            # eval time would silently destandardize with the wrong moments.
+            assert self.training, (
+                f"No standardizer for canvas grid size {grid_size} "
+                f"(available: {self.canvas_patch_grid_sizes}) and model is in eval mode"
+            )
             cfg = self.cfg
             assert isinstance(cfg, CanViTForPretrainingConfig)
             self.cls_standardizers[key] = CLSStandardizer(embed_dim=cfg.teacher_dim)
             self.scene_standardizers[key] = PatchStandardizer(grid_size=grid_size, embed_dim=cfg.teacher_dim)
-        return self.cls_standardizers[key], self.scene_standardizers[key]  # type: ignore[return-value]
+        return self.cls_standardizers[key], self.scene_standardizers[key]  # type: ignore[return-value]  # ModuleDict.__getitem__ returns Module
 
     @classmethod
     def from_checkpoint(cls, path: Path | str, *, map_location: str | torch.device = "cpu") -> Self:
         """Load from local .pt checkpoint file."""
         log.info("Loading checkpoint from %s (map_location=%s)", path, map_location)
-        ckpt = torch.load(path, map_location=map_location, weights_only=False)
+        ckpt = torch.load(path, map_location=map_location, weights_only=True)
         log.info("backbone_name=%s, canvas_patch_grid_sizes=%s", ckpt["backbone_name"], ckpt["canvas_patch_grid_sizes"])
         model = cls(
             backbone=create_backbone(ckpt["backbone_name"]),

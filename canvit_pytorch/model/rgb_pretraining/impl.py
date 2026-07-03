@@ -101,8 +101,11 @@ class CanViTForRGBReconstruction(CanViT):
     def from_checkpoint(cls, path: Path | str, *, map_location: str | torch.device = "cpu") -> Self:
         """Load from a local ``.pt`` checkpoint (``state_dict`` + ``model_config`` + ``backbone_name``)."""
         log.info("Loading RGB-reconstruction checkpoint from %s (map_location=%s)", path, map_location)
-        ckpt = torch.load(path, map_location=map_location, weights_only=False)
+        ckpt = torch.load(path, map_location=map_location, weights_only=True)
         model_config = ckpt["model_config"]
+        extra_keys = set(model_config) - set(CanViTConfig.__dataclass_fields__)
+        if extra_keys:
+            log.info("Ignoring non-CanViTConfig keys in model_config: %s", sorted(extra_keys))
         cfg = CanViTConfig(**{k: v for k, v in model_config.items() if k in CanViTConfig.__dataclass_fields__})
         model = cls(
             backbone=create_backbone(ckpt["backbone_name"]),
