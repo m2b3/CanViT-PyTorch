@@ -66,22 +66,26 @@ class CanViTForPretraining(CanViT):
 
         self.backbone_name = backbone_name
         for g in canvas_patch_grid_sizes:
-            self.standardizers(g)  # get-or-create, ensures they exist in state_dict
+            self.standardizers(g, create_missing=True)  # ensures they exist in state_dict
 
     @property
     def canvas_patch_grid_sizes(self) -> list[int]:
         """Canvas grid sizes (spatial side lengths in tokens) for which standardizers exist."""
         return [int(k) for k in self.cls_standardizers.keys()]
 
-    def standardizers(self, grid_size: int) -> tuple[CLSStandardizer, PatchStandardizer]:
-        """Get standardizers for a grid size, creating them when called in training mode."""
+    def standardizers(self, grid_size: int, *, create_missing: bool = False) -> tuple[CLSStandardizer, PatchStandardizer]:
+        """Get standardizers for a grid size.
+
+        ``create_missing=True`` registers fresh ones for a new grid; only training
+        setup that will initialize their statistics should pass it.
+        """
         key = str(grid_size)
         if key not in self.cls_standardizers:
-            # Freshly created standardizers hold identity statistics; using one at
-            # eval time would silently destandardize with the wrong moments.
-            assert self.training, (
+            # Freshly created standardizers hold identity statistics; consuming one
+            # without initializing it would silently destandardize with the wrong moments.
+            assert create_missing, (
                 f"No standardizer for canvas grid size {grid_size} "
-                f"(available: {self.canvas_patch_grid_sizes}) and model is in eval mode"
+                f"(available: {self.canvas_patch_grid_sizes})"
             )
             cfg = self.cfg
             assert isinstance(cfg, CanViTForPretrainingConfig)
